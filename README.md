@@ -1,3 +1,10 @@
+<p align="center">
+  <img src="docs/assets/globalCVE.png" alt="GlobalCVE Logo" width="200"/>
+</p>
+
+<h3 align="center"><em>Global threats. Unified insights.</em></h3>
+
+
 # 🌍 GlobalCVE
 
 GlobalCVE is an open-source platform designed to unify vulnerability intelligence from across the web. Instead of jumping between fragmented sources, researchers and developers can search, compare, and track CVEs in one place. Many existing databases miss listings that others include — for example, CVEs found on one site may be absent from another. GlobalCVE bridges those gaps, helping the community stay informed and ahead of emerging threats.

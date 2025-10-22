@@ -1,4 +1,4 @@
-![GlobalCVE Logo](https://raw.githubusercontent.com/globalcve/globalcve/main/docs/assets/globalCVE_V1.png)
+##![GlobalCVE Logo](https://raw.githubusercontent.com/globalcve/globalcve/main/docs/assets/globalCVE_V1.png)##
 
 **_Global threats. Unified insights._**
 

@@ -2,9 +2,30 @@
 
 **_Global threats. Unified insights._**
 
+## 🏷️ What Sets Us Apart
+
+GlobalCVE isn’t just another vulnerability feed. We’re building a transparent, unified, and open-source backbone for global CVE intelligence.
+
+- **Multi-source aggregation**  
+  We pull from public feeds across continents — NVD, CIRCL, JVN, ExploitDB, and more — with full attribution and fallback logic.
+
+- **Open by design**  
+  No paywalls, no vendor lock-in. Our code is public, our API is free, and our roadmap is community-driven.
+
+- **Minimalist and scalable**  
+  Built with serverless architecture and clean UI logic, GlobalCVE is fast, forkable, and easy to integrate.
+
+- **Security-first ethos**  
+  We prioritize clarity, provenance, and responsible data use — not marketing fluff or gated dashboards.
+
+- **Built by builders**  
+  This isn’t a product. It’s infrastructure. And it’s yours to use, improve, and extend.
+
 ---
 
 # 🌐 GlobalCVE
+...
+
 
 An open-source vulnerability intelligence platform that aggregates CVEs from multiple national and vendor sources — cleanly, transparently, and developer-friendly.
 

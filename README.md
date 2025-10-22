@@ -66,10 +66,10 @@ An open-source vulnerability intelligence platform that aggregates CVEs from mul
 
 Here’s a preview of GlobalCVE’s UI:
 
-### Homepage (Light Mode)
+### Homepage 
 ![Homepage Light](screenshots/homepage1.png)
 
-### Homepage (Dark Mode)
+### Homepage 
 ![Homepage Dark](screenshots/homepage2.png)
 
 

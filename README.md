@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="docs/assets/globalCVE.png" alt="GlobalCVE Logo" width="300"/>
+</p>
 
 
 **_Global threats. Unified insights._**

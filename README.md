@@ -62,6 +62,16 @@ An open-source vulnerability intelligence platform that aggregates CVEs from mul
 - **Optional DBs**: SQLite, Supabase, or flat file cache
 
 ---
+## Screenshots
+
+Here’s a preview of GlobalCVE’s UI:
+
+### Homepage (Light Mode)
+![Homepage Light](screenshots/homepage1.png)
+
+### Homepage (Dark Mode)
+![Homepage Dark](screenshots/homepage2.png)
+
 
 ## 📦 Getting Started
 

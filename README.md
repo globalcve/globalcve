@@ -1,8 +1,6 @@
-<p align="center">
-  <img src="docs/assets/globalCVE.png" alt="GlobalCVE Logo" width="200"/>
-</p>
+![GlobalCVE Logo](https://raw.githubusercontent.com/globalcve/globalcve/main/docs/assets/globalCVE.png)
 
-<h3 align="center"><em>Global threats. Unified insights.</em></h3>
+**_Global threats. Unified insights._**
 
 ---
 
@@ -48,24 +46,28 @@ An open-source vulnerability intelligence platform that aggregates CVEs from mul
 
 To run locally:
 
-```bash
-npm install
-npm run dev
-Then visit http://localhost:3000 to view the site.
+    npm install
+    npm run dev
 
-🛠️ Contributing
-We welcome PRs, parser improvements, and new source integrations.
+Then visit [http://localhost:3000](http://localhost:3000) to view the site.
+
+---
+
+## 🛠️ Contributing
+
+We welcome PRs, parser improvements, and new source integrations.  
 Contribution templates coming soon.
 
-Contributor Guide -- coming soon
-API Docs --coming soon
+- [Contributor Guide](docs/contributing.md) — *coming soon*  
+- [API Docs](docs/index.md) — *coming soon*
 
-📫 Contact
-Email: globalcve@gmail.com
-GitHub: @globalcbe
+---
 
-Built with clarity, minimalism, and a deep respect for reproducibility.
- 
+## 📫 Contact
 
+- Email: [globalcve@gmail.com](mailto:globalcve@gmail.com)  
+- GitHub: [@globalcve](https://github.com/globalcve)
 
+---
 
+> Built with clarity, minimalism, and a deep respect for reproducibility.

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/globalCVE.png" alt="GlobalCVE Logo" width="300"/>
+  <img src="docs/assets/globalCVE_V2.png" alt="GlobalCVE Logo" width="300"/>
 </p>
 
 

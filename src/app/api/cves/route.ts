@@ -1,4 +1,5 @@
 // Trigger redeploy: patch confirmed
+console.log("🧪 LIVE PATCH: ExploitDB crash guard active");
 import { NextResponse } from 'next/server';
 import { fetchJVNFeed } from "../../lib/jvn";
 import { fetchExploitDB } from "../../../lib/exploitdb";

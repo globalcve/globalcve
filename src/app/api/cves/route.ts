@@ -204,9 +204,6 @@ export async function GET(request: Request) {
         allResults.push(...matchingYearCVEs.map((item: any) => ({
           id: item.id,
           description: item.description || 'No description available from archive.',
-        allResults.push(...matchingYearCVEs.map((item: any) => ({
-          id: item.id,
-          description: item.description || 'No description available from archive.',
           severity: item.severity || 'Unknown',
           published: item.published || new Date().toISOString(),
           source: `Archive ${year}`,

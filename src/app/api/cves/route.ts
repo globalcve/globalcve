@@ -49,64 +49,66 @@ export async function GET(request: Request) {
   }
 
   // 🔹 Fetch from CIRCL
-  const circlSearchUrl = `https://cve.circl.lu/api/search/${encodeURIComponent(query)}`;
-  console.log(`🌐 CIRCL search: ${circlSearchUrl}`);
+  if (query.trim()) {
+    const circlSearchUrl = `https://cve.circl.lu/api/search/${encodeURIComponent(query)}`;
+    console.log(`🌐 CIRCL search: ${circlSearchUrl}`);
 
-  try {
-    const circlRes = await fetch(circlSearchUrl);
-    console.log(`📡 CIRCL search status: ${circlRes.status}`);
+    try {
+      const circlRes = await fetch(circlSearchUrl);
+      console.log(`📡 CIRCL search status: ${circlRes.status}`);
 
-    if (circlRes.ok) {
-      const circlData = await circlRes.json();
-      allResults.push(...circlData.map((item: any) => ({
-        id: item.id,
-        description: item.summary?.trim() || 'No description available from CIRCL.',
-        severity: item.cvss >= 9 ? 'CRITICAL' :
-                  item.cvss >= 7 ? 'HIGH' :
-                  item.cvss >= 4 ? 'MEDIUM' :
-                  item.cvss > 0 ? 'LOW' : 'HIGH',
-        published: item.Published && !isNaN(Date.parse(item.Published))
-          ? new Date(item.Published) > new Date()
-            ? new Date().toISOString()
-            : item.Published
-          : new Date().toISOString(),
-        source: 'CIRCL',
-      })));
-    } else if (isExactCveId) {
-      const circlIdUrl = `https://cve.circl.lu/api/cve/${encodeURIComponent(query)}`;
-      console.log(`🔁 CIRCL fallback: ${circlIdUrl}`);
-
-      const circlIdRes = await fetch(circlIdUrl);
-      console.log(`📡 CIRCL fallback status: ${circlIdRes.status}`);
-
-      if (circlIdRes.ok) {
-        const item = await circlIdRes.json();
-        console.log('🧩 CIRCL fallback raw:', item);
-
-        const fallbackPublished = item.Published && !isNaN(Date.parse(item.Published))
-          ? new Date(item.Published) > new Date()
-            ? new Date().toISOString()
-            : item.Published
-          : new Date().toISOString();
-
-        const fallbackDescription =
-          item?.containers?.cna?.descriptions?.[0]?.value?.trim() ||
-          'No description available from CIRCL.';
-
-        allResults.push({
-          id: item.cveMetadata?.cveId || item.id,
-          description: fallbackDescription,
+      if (circlRes.ok) {
+        const circlData = await circlRes.json();
+        allResults.push(...circlData.map((item: any) => ({
+          id: item.id,
+          description: item.summary?.trim() || 'No description available from CIRCL.',
           severity: item.cvss >= 9 ? 'CRITICAL' :
                     item.cvss >= 7 ? 'HIGH' :
                     item.cvss >= 4 ? 'MEDIUM' :
                     item.cvss > 0 ? 'LOW' : 'HIGH',
-          published: fallbackPublished,
+          published: item.Published && !isNaN(Date.parse(item.Published))
+            ? new Date(item.Published) > new Date()
+              ? new Date().toISOString()
+              : item.Published
+            : new Date().toISOString(),
           source: 'CIRCL',
-        });
+        })));
+      } else if (isExactCveId) {
+        const circlIdUrl = `https://cve.circl.lu/api/cve/${encodeURIComponent(query)}`;
+        console.log(`🔁 CIRCL fallback: ${circlIdUrl}`);
+
+        const circlIdRes = await fetch(circlIdUrl);
+        console.log(`📡 CIRCL fallback status: ${circlIdRes.status}`);
+
+        if (circlIdRes.ok) {
+          const item = await circlIdRes.json();
+          console.log('🧩 CIRCL fallback raw:', item);
+
+          const fallbackPublished = item.Published && !isNaN(Date.parse(item.Published))
+            ? new Date(item.Published) > new Date()
+              ? new Date().toISOString()
+              : item.Published
+            : new Date().toISOString();
+
+          const fallbackDescription =
+            item?.containers?.cna?.descriptions?.[0]?.value?.trim() ||
+            'No description available from CIRCL.';
+
+          allResults.push({
+            id: item.cveMetadata?.cveId || item.id,
+            description: fallbackDescription,
+            severity: item.cvss >= 9 ? 'CRITICAL' :
+                      item.cvss >= 7 ? 'HIGH' :
+                      item.cvss >= 4 ? 'MEDIUM' :
+                      item.cvss > 0 ? 'LOW' : 'HIGH',
+            published: fallbackPublished,
+            source: 'CIRCL',
+          });
+        }
       }
+    } catch (err) {
+      console.error('❌ CIRCL error:', err);
     }
-  } catch (err) {
-    console.error('❌ CIRCL error:', err);
   }
 
   // 🔹 Fetch from JVN RSS
@@ -128,10 +130,15 @@ export async function GET(request: Request) {
   }
 
   // 🔹 Fetch from ExploitDB CSV
+  let exploitResults = [];
   try {
-    const exploitResults = await fetchExploitDB();
+    exploitResults = await fetchExploitDB();
     console.log('💣 ExploitDB entries loaded:', exploitResults.length);
+  } catch (err) {
+    console.error('❌ ExploitDB fetch error:', err);
+  }
 
+  if (exploitResults.length > 0) {
     const q = query.toLowerCase();
     const matchingExploits = exploitResults.filter((item) =>
       item.id?.toLowerCase().includes(q) ||
@@ -141,8 +148,6 @@ export async function GET(request: Request) {
 
     console.log('🔎 Matching ExploitDB entries:', matchingExploits);
     allResults.push(...matchingExploits);
-  } catch (err) {
-    console.error('❌ ExploitDB fetch error:', err);
   }
 
   // 🔹 Fetch from CVE.org GitHub Release

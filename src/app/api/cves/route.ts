@@ -145,6 +145,32 @@ export async function GET(request: Request) {
     console.error('❌ ExploitDB fetch error:', err);
   }
 
+  // 🔹 Fetch from CVE.org GitHub Release
+  try {
+    if (query.trim()) {
+      const res = await fetch('https://github.com/globalcve/globalcve/releases/download/v1.0.0/cveorg.json');
+      const cveorgData = await res.json();
+
+      const q = query.toLowerCase();
+      const matchingCveOrg = cveorgData.filter((item: any) =>
+        item.id?.toLowerCase().includes(q) ||
+        item.description?.toLowerCase().includes(q)
+      );
+
+      console.log('📁 Matching CVE.org entries:', matchingCveOrg.length);
+
+      allResults.push(...matchingCveOrg.map((item: any) => ({
+        id: item.id,
+        description: item.description || 'No description available from CVE.org.',
+        severity: 'Unknown',
+        published: item.published || new Date().toISOString(),
+        source: 'CVE.org',
+      })));
+    }
+  } catch (err) {
+    console.error('❌ CVE.org fetch error:', err);
+  }
+
   // 🔹 Filter by severity
   let results = allResults;
 

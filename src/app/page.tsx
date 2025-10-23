@@ -80,7 +80,6 @@ export default function Home() {
           Want to contribute? <a href="https://github.com/globalcve" className="text-[#ff79c6] underline">Join us on GitHub</a>
         </p>
       </section>
-
       {/* 🔍 Live Search Bar */}
       <section className="mt-16 max-w-4xl w-full text-center" id="search">
         <h2 className="text-3xl font-bold text-[#50fa7b] mb-4">Search CVEs</h2>
@@ -122,13 +121,16 @@ export default function Home() {
           </button>
         </div>
         <p className="mt-2 text-sm text-[#6272a4]">Powered by GlobalCVE API (NVD live).</p>
+
         {/* Display Results */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
           {loading ? (
             <LoadingSpinner />
           ) : results.length > 0 ? (
             <>
-              {results.map((cve) => <CveCard key={cve.id} {...cve} />)}
+              {(results as any[]).map((cve) => (
+                <CveCard key={cve.id} {...cve} />
+              ))}
               <div className="col-span-2 text-center mt-4">
                 <button
                   onClick={() => fetchResults()}

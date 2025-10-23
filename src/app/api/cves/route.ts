@@ -1,3 +1,4 @@
+// Trigger redeploy: patch confirmed
 import { NextResponse } from 'next/server';
 import { fetchJVNFeed } from "../../lib/jvn";
 import { fetchExploitDB } from "../../../lib/exploitdb";

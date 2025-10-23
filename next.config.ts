@@ -5,7 +5,7 @@ const nextConfig = {
   },
   reactStrictMode: true,
   experimental: {
-    serverActions: true,
+    serverActions: {},
   },
 };
 

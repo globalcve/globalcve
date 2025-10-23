@@ -25,16 +25,13 @@ export async function GET(request: Request) {
   for (let i = 0; i < 5; i++) {
     const startIndex = i * 100;
     const pageUrl = `https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=${encodeURIComponent(query)}&resultsPerPage=100&startIndex=${startIndex}`;
-
     console.log(`🌐 NVD page ${i + 1}: ${pageUrl}`);
 
     try {
       const pageRes = await fetch(pageUrl, {
         headers: NVD_API_KEY ? { 'apiKey': NVD_API_KEY } : {},
       });
-
       console.log(`📡 NVD page ${i + 1} status: ${pageRes.status}`);
-
       if (!pageRes.ok) continue;
 
       const pageData = await pageRes.json();
@@ -134,6 +131,7 @@ export async function GET(request: Request) {
   // 🔹 Fetch from ExploitDB CSV
   let exploitResults = [];
   try {
+    console.log('🧪 ExploitDB fallback active');
     exploitResults = await fetchExploitDB();
     console.log('💣 ExploitDB entries loaded:', exploitResults.length);
   } catch (err) {

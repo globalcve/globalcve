@@ -1,5 +1,4 @@
 // Favicon patch confirmed
-import Head from "next/head";
 // import type { Metadata } from "next"; // Temporarily disabled
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -27,10 +26,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Head>
-        <link rel="icon" href="/globalcve-favicon.ico" />
-        <meta name="msapplication-TileImage" content="/globalcve-favicon.ico" />
-      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

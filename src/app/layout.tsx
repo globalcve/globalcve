@@ -51,6 +51,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
+        <footer className="mt-12 text-center">
+          <a
+            href="https://www.buymeacoffee.com/globalcve"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block rounded-md bg-yellow-400 px-4 py-2 text-sm font-medium text-black hover:bg-yellow-300 transition"
+          >
+            ☕ Buy Me a Coffee
+          </a>
+        </footer>
         <Analytics />
       </body>
     </html>

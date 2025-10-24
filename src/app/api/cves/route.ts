@@ -91,11 +91,9 @@ export async function GET(request: Request) {
       const items = Array.isArray(data) ? data : [data];
 
       for (const item of items) {
-        const published = item.Published && !isNaN(Date.parse(item.Published))
-          ? new Date(item.Published) > new Date()
-            ? new Date().toISOString()
-            : item.Published
-          : new Date().toISOString();
+      const rawDate = item.Published;
+const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
+
 
         const description =
           item?.summary?.trim() ||

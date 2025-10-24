@@ -1,11 +1,31 @@
 // Trigger redeploy: patch confirmed
 import AdmZip from 'adm-zip';
+import { Buffer } from 'buffer';
 console.log("🧪 LIVE PATCH: ExploitDB crash guard active");
 import { NextResponse } from 'next/server';
-import { fetchJVNFeed } from "../../lib/jvn";
+import { fetchJVNFeed } from "../../../lib/jvn";
 import { fetchExploitDB } from "../../../lib/exploitdb";
 
 const NVD_API_KEY = process.env.NVD_API_KEY;
+
+function isString(field: unknown): field is string {
+  return typeof field === 'string';
+}
+
+function inferSeverity(item: any): string {
+  const score = item.cvss ?? item.cvssScore ?? item.cvssv3 ?? item.cvssv2;
+  if (typeof score === 'number') {
+    if (score >= 9) return 'CRITICAL';
+    if (score >= 7) return 'HIGH';
+    if (score >= 4) return 'MEDIUM';
+    if (score > 0) return 'LOW';
+  }
+
+  const label = item.severity?.toUpperCase?.();
+  if (['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'].includes(label)) return label;
+
+  return 'UNKNOWN';
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -39,7 +59,7 @@ export async function GET(request: Request) {
       allResults.push(...(pageData.vulnerabilities || []).map((item: any) => ({
         id: item.cve.id,
         description: item.cve.descriptions?.[0]?.value || 'No description',
-        severity: item.cve.metrics?.cvssMetricV31?.[0]?.cvssData?.baseSeverity || 'Unknown',
+        severity: item.cve.metrics?.cvssMetricV31?.[0]?.cvssData?.baseSeverity || 'UNKNOWN',
         published: item.cve.published || new Date().toISOString(),
         source: 'NVD',
       })));
@@ -48,88 +68,71 @@ export async function GET(request: Request) {
     }
   }
 
-  // 🔹 Fetch from CIRCL
-  if (query.trim()) {
-    const circlSearchUrl = `https://cve.circl.lu/api/search/${encodeURIComponent(query)}`;
-    console.log(`🌐 CIRCL search: ${circlSearchUrl}`);
+  // 🔹 CIRCL fallback — keyword or exact ID
+  try {
+    const circlUrl = isExactCveId
+      ? `https://cve.circl.lu/api/cve/${encodeURIComponent(query)}`
+      : `https://cve.circl.lu/api/search/${encodeURIComponent(query)}`;
+    console.log(`🔁 CIRCL query: ${circlUrl}`);
 
-    try {
-      const circlRes = await fetch(circlSearchUrl);
-      console.log(`📡 CIRCL search status: ${circlRes.status}`);
+    const circlRes = await fetch(circlUrl);
+    console.log(`📡 CIRCL status: ${circlRes.status}`);
 
-      if (circlRes.ok) {
-        const circlData = await circlRes.json();
-        allResults.push(...circlData.map((item: any) => ({
-          id: item.id,
-          description: item.summary?.trim() || 'No description available from CIRCL.',
-          severity: item.cvss >= 9 ? 'CRITICAL' :
-                    item.cvss >= 7 ? 'HIGH' :
-                    item.cvss >= 4 ? 'MEDIUM' :
-                    item.cvss > 0 ? 'LOW' : 'HIGH',
-          published: item.Published && !isNaN(Date.parse(item.Published))
-            ? new Date(item.Published) > new Date()
-              ? new Date().toISOString()
-              : item.Published
-            : new Date().toISOString(),
+    if (circlRes.ok) {
+      const data = await circlRes.json();
+      const items = Array.isArray(data) ? data : [data];
+
+      for (const item of items) {
+        const published = item.Published && !isNaN(Date.parse(item.Published))
+          ? new Date(item.Published) > new Date()
+            ? new Date().toISOString()
+            : item.Published
+          : new Date().toISOString();
+
+        const description =
+          item?.summary?.trim() ||
+          item?.containers?.cna?.descriptions?.[0]?.value?.trim() ||
+          'No description available from CIRCL.';
+
+        allResults.push({
+          id: item.cveMetadata?.cveId || item.id,
+          description,
+          severity: inferSeverity(item),
+          published,
           source: 'CIRCL',
-        })));
-      } else if (isExactCveId) {
-        const circlIdUrl = `https://cve.circl.lu/api/cve/${encodeURIComponent(query)}`;
-        console.log(`🔁 CIRCL fallback: ${circlIdUrl}`);
-
-        const circlIdRes = await fetch(circlIdUrl);
-        console.log(`📡 CIRCL fallback status: ${circlIdRes.status}`);
-
-        if (circlIdRes.ok) {
-          const item = await circlIdRes.json();
-          console.log('🧩 CIRCL fallback raw:', item);
-
-          const fallbackPublished = item.Published && !isNaN(Date.parse(item.Published))
-            ? new Date(item.Published) > new Date()
-              ? new Date().toISOString()
-              : item.Published
-            : new Date().toISOString();
-
-          const fallbackDescription =
-            item?.containers?.cna?.descriptions?.[0]?.value?.trim() ||
-            'No description available from CIRCL.';
-
-          allResults.push({
-            id: item.cveMetadata?.cveId || item.id,
-            description: fallbackDescription,
-            severity: item.cvss >= 9 ? 'CRITICAL' :
-                      item.cvss >= 7 ? 'HIGH' :
-                      item.cvss >= 4 ? 'MEDIUM' :
-                      item.cvss > 0 ? 'LOW' : 'HIGH',
-            published: fallbackPublished,
-            source: 'CIRCL',
-          });
-        }
+        });
       }
-    } catch (err) {
-      console.error('❌ CIRCL error:', err);
+
+      console.log('🧩 CIRCL entries added:', items.length);
     }
+  } catch (err) {
+    console.error('❌ CIRCL error:', err);
   }
 
-  // 🔹 Fetch from JVN RSS
+  // 🔹 JVN feed with manual keyword match (lint-cleaned)
   try {
     const jvnResults = await fetchJVNFeed();
     console.log('📰 JVN feed loaded:', jvnResults.length);
 
+    const q = query.toLowerCase();
     const matchingJVNs = jvnResults.filter((item) =>
-      item.id === query ||
-      item.id?.includes(query) ||
-      item.title?.includes(query) ||
-      item.description?.includes(query)
+      [item.id, item.title, item.description, item.link]
+        .filter(Boolean)
+        .some((field) => isString(field) && field.toLowerCase().includes(q))
     );
 
-    console.log('🔎 Matching JVN entries:', matchingJVNs);
-    allResults.push(...matchingJVNs);
+    console.log('🔎 Matching JVN entries:', matchingJVNs.length);
+    allResults.push(...matchingJVNs.map((item) => ({
+      id: item.id,
+      description: item.description,
+      severity: inferSeverity(item),
+      published: item.published,
+      source: 'JVN',
+    })));
   } catch (err) {
     console.error('❌ JVN fetch error:', err);
   }
-
-  // 🔹 Fetch from ExploitDB CSV
+  // 🔹 ExploitDB with partial match
   let exploitResults = [];
   try {
     console.log('🧪 ExploitDB fallback active');
@@ -142,16 +145,22 @@ export async function GET(request: Request) {
   if (exploitResults.length > 0) {
     const q = query.toLowerCase();
     const matchingExploits = exploitResults.filter((item) =>
-      item.id?.toLowerCase().includes(q) ||
-      item.description?.toLowerCase().includes(q) ||
-      item.source?.toLowerCase().includes(q)
+      [item.id, item.description, item.source, item.link]
+        .filter(Boolean)
+        .some((field) => isString(field) && field.toLowerCase().includes(q))
     );
 
-    console.log('🔎 Matching ExploitDB entries:', matchingExploits);
-    allResults.push(...matchingExploits);
+    console.log('🔎 Matching ExploitDB entries:', matchingExploits.length);
+    allResults.push(...matchingExploits.map((item) => ({
+      id: item.id,
+      description: item.description,
+      severity: inferSeverity(item),
+      published: typeof item.date === 'string' ? item.date : new Date().toISOString(),
+      source: 'EXPLOITDB',
+    })));
   }
 
-  // 🔹 Fetch from CVE.org GitHub Release
+  // 🔹 CVE.org GitHub release
   try {
     if (query.trim()) {
       const res = await fetch('https://github.com/globalcve/globalcve/releases/download/v1.0.0/cveorg.json');
@@ -159,8 +168,9 @@ export async function GET(request: Request) {
 
       const q = query.toLowerCase();
       const matchingCveOrg = cveorgData.filter((item: any) =>
-        item.id?.toLowerCase().includes(q) ||
-        item.description?.toLowerCase().includes(q)
+        [item.id, item.description]
+          .filter(Boolean)
+          .some((field) => isString(field) && field.toLowerCase().includes(q))
       );
 
       console.log('📁 Matching CVE.org entries:', matchingCveOrg.length);
@@ -168,18 +178,18 @@ export async function GET(request: Request) {
       allResults.push(...matchingCveOrg.map((item: any) => ({
         id: item.id,
         description: item.description || 'No description available from CVE.org.',
-        severity: 'Unknown',
+        severity: inferSeverity(item),
         published: item.published || new Date().toISOString(),
-        source: 'CVE.org',
+        source: 'CVE.ORG',
       })));
     }
   } catch (err) {
     console.error('❌ CVE.org fetch error:', err);
   }
 
-  // 🔹 Fetch from archive ZIP (year-based CVEs)
+  // 🔹 Archive ZIP with guard for missing year (patched)
   try {
-    const yearMatch = query.match(/^CVE-(\d{4})-/);
+    const yearMatch = !isExactCveId ? query.match(/^CVE-(\d{4})-/) : null;
     const year = yearMatch?.[1];
 
     if (year) {
@@ -195,8 +205,9 @@ export async function GET(request: Request) {
 
         const q = query.toLowerCase();
         const matchingYearCVEs = yearData.filter((item: any) =>
-          item.id?.toLowerCase().includes(q) ||
-          item.description?.toLowerCase().includes(q)
+          [item.id, item.description]
+            .filter(Boolean)
+            .some((field) => isString(field) && field.toLowerCase().includes(q))
         );
 
         console.log(`📁 Matching ${year} CVEs:`, matchingYearCVEs.length);
@@ -204,9 +215,9 @@ export async function GET(request: Request) {
         allResults.push(...matchingYearCVEs.map((item: any) => ({
           id: item.id,
           description: item.description || 'No description available from archive.',
-          severity: item.severity || 'Unknown',
+          severity: inferSeverity(item),
           published: item.published || new Date().toISOString(),
-          source: `Archive ${year}`,
+          source: 'ARCHIVE',
         })));
       } else {
         console.warn(`⚠️ ${year}.json not found in cves.zip`);
@@ -216,9 +227,14 @@ export async function GET(request: Request) {
     console.error('❌ Archive CVE fetch error:', err);
   }
 
-  // 🔹 Filter by severity
-  let results = allResults;
+  // 🔹 Prioritize exact CVE ID match if applicable
+  let results = isExactCveId
+    ? allResults.filter((r) => r.id?.toUpperCase() === query.toUpperCase())
+    : allResults;
 
+  console.log('🎯 Exact match results:', results.length);
+
+  // 🔹 Filter by severity
   if (severityFilter) {
     results = results.filter((cve) => cve.severity?.toUpperCase() === severityFilter);
   }

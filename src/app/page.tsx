@@ -4,7 +4,7 @@ import { useState } from 'react';
 import CveCard from './components/CveCard';
 import LoadingSpinner from './components/LoadingSpinner';
 
-export default function Home() {
+export default function Page() {
   const [query, setQuery] = useState('');
   const [severity, setSeverity] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
@@ -12,21 +12,32 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [page, setPage] = useState(0);
+  const [error, setError] = useState('');
 
   const fetchResults = async (reset = false) => {
+    if (loading) return;
     setLoading(true);
+    setError('');
     setHasSearched(true);
     const currentPage = reset ? 0 : page;
-    const res = await fetch(
-      `/api/cves?query=${encodeURIComponent(query)}&severity=${severity}&sort=${sortOrder}&startIndex=${currentPage * 100}`
-    );
-    const data = await res.json();
-    const newResults = data.results || [];
-    setResults(reset ? newResults : [...results, ...newResults]);
-    setPage(currentPage + 1);
-    setLoading(false);
-  };
 
+    try {
+      const res = await fetch(
+        `/api/cves?query=${encodeURIComponent(query)}&severity=${severity}&sort=${sortOrder}&startIndex=${currentPage * 100}`
+      );
+      if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
+      const data = await res.json();
+      const newResults = data.results || [];
+      setResults(reset ? newResults : [...results, ...newResults]);
+      setPage(currentPage + 1);
+    } catch (err: any) {
+      console.error('❌ Fetch error:', err);
+      setError('Something went wrong while fetching CVEs. Please try again.');
+    } finally {
+      await new Promise((r) => setTimeout(r, 500)); // Spinner visibility fix
+      setLoading(false);
+    }
+  };
   return (
     <main className="min-h-screen bg-[#282a36] text-[#f8f8f2] flex flex-col items-center justify-center p-6 space-y-2">
       <nav className="w-full bg-[#44475a] text-[#f8f8f2] py-4 px-6 flex justify-between items-center">
@@ -46,16 +57,29 @@ export default function Home() {
       </p>
 
       <section className="mt-12 max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 text-[#f8f8f2]">
-        {/* Feature cards go here */}
+        <div className="bg-[#44475a] p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-[#50fa7b] mb-2">Unified CVE Aggregation</h2>
+          <p>Pulls from multiple sources to provide a complete, up-to-date view of global vulnerabilities.</p>
+        </div>
+        <div className="bg-[#44475a] p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-[#8be9fd] mb-2">Open-Source Intelligence</h2>
+          <p>Built by and for the community — transparent, collaborative, and always improving.</p>
+        </div>
+        <div className="bg-[#44475a] p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-[#ff79c6] mb-2">Security-Centric Design</h2>
+          <p>Minimal, clean, and built with best practices for secure environments and responsible data use.</p>
+        </div>
+        <div className="bg-[#44475a] p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-[#bd93f9] mb-2">API-Ready Architecture</h2>
+          <p>Designed for future integration — automate, query, and connect with ease.</p>
+        </div>
       </section>
 
       <section className="mt-16 max-w-4xl w-full text-center">
         <h2 className="text-3xl font-bold text-[#ff79c6] mb-6">Built by the community</h2>
         <div className="bg-[#44475a] p-6 rounded-lg shadow-md">
           <h3 className="text-xl font-semibold text-[#50fa7b] mb-2">JESSE-EG-LY @ GlobalCVE</h3>
-          <p>
-            Founder and lead architect of GlobalCVE. Building a unified, open-source hub for vulnerability intelligence.
-          </p>
+          <p>Founder and lead architect of GlobalCVE. Building a unified, open-source hub for vulnerability intelligence.</p>
         </div>
         <p className="mt-6">
           Want to contribute? <a href="https://github.com/globalcve" className="text-[#ff79c6] underline">Join us on GitHub</a>
@@ -96,46 +120,63 @@ export default function Home() {
               setPage(0);
               fetchResults(true);
             }}
-            className="px-4 py-2 bg-[#50fa7b] text-[#282a36] rounded-md font-semibold hover:bg-[#8be9fd]"
+            disabled={loading}
+            className={`px-4 py-2 rounded-md font-semibold ${
+              loading ? 'bg-[#6272a4] cursor-not-allowed' : 'bg-[#50fa7b] hover:bg-[#8be9fd]'
+            } text-[#282a36]`}
           >
-            Search
+            {loading ? 'Searching...' : 'Search'}
           </button>
         </div>
-        <p className="mt-2 text-sm text-[#6272a4]">Powered by GlobalCVE API (NVD live).</p>
+
+        {error && (
+          <div className="mt-4 text-sm text-red-400">
+            {error}
+            <button
+              onClick={() => fetchResults()}
+              className="ml-4 px-3 py-1 bg-[#ff5555] text-[#f8f8f2] rounded hover:bg-[#ff6e6e]"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {loading && (
+          <div className="mt-8 flex justify-center">
+            <LoadingSpinner />
+          </div>
+        )}
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-          {loading ? (
-            <LoadingSpinner />
-          ) : results.length > 0 ? (
+          {results.length > 0 && (
             <>
               {(results as any[]).map((cve) => (
                 <CveCard key={cve.id} {...cve} />
               ))}
-              <div className="col-span-2 text-center mt-4">
-                <button
-                  onClick={() => fetchResults()}
-                  className="px-4 py-2 bg-[#ff79c6] text-[#282a36] rounded-md font-semibold hover:bg-[#bd93f9]"
-                >
-                  Load More
-                </button>
-              </div>
             </>
-          ) : hasSearched ? (
+          )}
+
+          {!loading && results.length === 0 && hasSearched && !error && (
             <p className="text-sm text-[#6272a4] mt-4 col-span-2">
               No CVEs found for that query. Try a different keyword or check back later.
             </p>
-          ) : null}
+          )}
         </div>
-      </section>
 
-      <section className="mt-16 max-w-4xl w-full text-center">
-        <h2 className="text-3xl font-bold text-[#8be9fd] mb-6">Recent CVE Activity</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-          {/* Static CVE cards */}
-        </div>
-        <p className="mt-6 text-sm">
-          Data sourced from Microsoft’s October 2025 Patch Tuesday updates. Full integration coming soon.
-        </p>
+        {!loading && results.length > 0 && (
+          <div className="col-span-2 text-center mt-4">
+            <button
+              onClick={() => fetchResults()}
+              disabled={loading}
+              className={`px-4 py-2 rounded-md font-semibold ${
+                loading ? 'bg-[#6272a4] cursor-not-allowed' : 'bg-[#ff79c6] hover:bg-[#bd93f9]'
+              } text-[#282a36]`}
+            >
+              {loading ? 'Loading...' : 'Load More'}
+            </button>
+            <p className="mt-2 text-sm text-[#6272a4]">Page {page}</p>
+          </div>
+        )}
       </section>
 
       <footer className="mt-16 w-full border-t border-[#44475a] pt-6 text-center text-sm text-[#6272a4]">

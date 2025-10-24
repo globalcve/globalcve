@@ -4,6 +4,9 @@
 
 
 **_Global threats. Unified insights._**
+## ☕ Support the Project
+
+If you find GlobalCVE useful, consider [buying me a coffee](https://www.buymeacoffee.com/globalcve) to support ongoing development.
 
 ## 🏷️ What Sets Us Apart
 

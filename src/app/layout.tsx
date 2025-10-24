@@ -49,14 +49,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#282a36] text-[#f8f8f2]`}
+      >
         {children}
-        <footer className="mt-12 text-center">
+        <footer className="mt-12 py-6 text-center bg-[#44475a]">
           <a
             href="https://www.buymeacoffee.com/globalcve"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block rounded-md bg-yellow-400 px-4 py-2 text-sm font-medium text-black hover:bg-yellow-300 transition"
+            className="inline-block rounded-md bg-[#ffb86c] px-4 py-2 text-sm font-medium text-[#282a36] hover:bg-[#ff9f50] transition shadow-md"
           >
             ☕ Buy Me a Coffee
           </a>

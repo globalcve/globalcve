@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CveCard from './components/CveCard';
 import LoadingSpinner from './components/LoadingSpinner';
 
@@ -14,7 +14,7 @@ export default function Page() {
   const [page, setPage] = useState(0);
   const [error, setError] = useState('');
 
-  const fetchResults = async (reset = false) => {
+  const fetchResults = async (reset = false, sort = sortOrder) => {
     if (loading) return;
     setLoading(true);
     setError('');
@@ -23,7 +23,7 @@ export default function Page() {
 
     try {
       const res = await fetch(
-        `/api/cves?query=${encodeURIComponent(query)}&severity=${severity}&sort=${sortOrder}&startIndex=${currentPage * 100}`
+        `/api/cves?query=${encodeURIComponent(query)}&severity=${severity}&sort=${sort}&startIndex=${currentPage * 100}`
       );
       if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
       const data = await res.json();
@@ -38,6 +38,13 @@ export default function Page() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (hasSearched) {
+      setPage(0);
+      fetchResults(true, sortOrder);
+    }
+  }, [sortOrder]);
   return (
     <main className="min-h-screen bg-[#282a36] text-[#f8f8f2] flex flex-col items-center justify-center p-6 space-y-2">
       <nav className="w-full bg-[#44475a] text-[#f8f8f2] py-4 px-6 flex justify-between items-center">
@@ -118,7 +125,7 @@ export default function Page() {
           <button
             onClick={() => {
               setPage(0);
-              fetchResults(true);
+              fetchResults(true, sortOrder);
             }}
             disabled={loading}
             className={`px-4 py-2 rounded-md font-semibold ${
@@ -133,7 +140,7 @@ export default function Page() {
           <div className="mt-4 text-sm text-red-400">
             {error}
             <button
-              onClick={() => fetchResults()}
+              onClick={() => fetchResults(false, sortOrder)}
               className="ml-4 px-3 py-1 bg-[#ff5555] text-[#f8f8f2] rounded hover:bg-[#ff6e6e]"
             >
               Retry
@@ -166,7 +173,7 @@ export default function Page() {
         {!loading && results.length > 0 && (
           <div className="col-span-2 text-center mt-4">
             <button
-              onClick={() => fetchResults()}
+              onClick={() => fetchResults(false, sortOrder)}
               disabled={loading}
               className={`px-4 py-2 rounded-md font-semibold ${
                 loading ? 'bg-[#6272a4] cursor-not-allowed' : 'bg-[#ff79c6] hover:bg-[#bd93f9]'
@@ -185,7 +192,7 @@ export default function Page() {
           Built with ❤️ by <span className="text-[#50fa7b] font-semibold">JESSE-EG-LY</span> —
           <a href="https://github.com/globalcve" className="text-[#ff79c6] underline ml-1">GitHub</a>
         </p>
-      </footer>
+            </footer>
     </main>
   );
 }

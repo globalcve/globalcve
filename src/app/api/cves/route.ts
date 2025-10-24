@@ -12,6 +12,14 @@ function isString(field: unknown): field is string {
   return typeof field === 'string';
 }
 
+function isValidDate(date: unknown): date is string {
+  return (
+    typeof date === 'string' &&
+    !isNaN(Date.parse(date)) &&
+    new Date(date).getFullYear() <= 2025
+  );
+}
+
 function inferSeverity(item: any): string {
   const score = item.cvss ?? item.cvssScore ?? item.cvssv3 ?? item.cvssv2;
   if (typeof score === 'number') {
@@ -155,7 +163,7 @@ export async function GET(request: Request) {
       id: item.id,
       description: item.description,
       severity: inferSeverity(item),
-      published: typeof item.date === 'string' ? item.date : new Date().toISOString(),
+      published: isValidDate(item.date) ? item.date : "2000-01-01",
       source: 'EXPLOITDB',
     })));
   }

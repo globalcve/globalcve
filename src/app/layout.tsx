@@ -52,8 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#282a36] text-[#f8f8f2]`}
       >
-        {children}
-        <div className="mt-12 mb-6 text-center">
+        <div className="pt-6 pb-4 text-center bg-[#282a36]">
           <a
             href="https://www.buymeacoffee.com/globalcve"
             target="_blank"
@@ -63,6 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             ☕ Buy Me a Coffee
           </a>
         </div>
+        {children}
         <Analytics />
       </body>
     </html>

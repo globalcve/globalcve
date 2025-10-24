@@ -37,10 +37,11 @@ const sourceStyles: Record<string, string> = {
 };
 
 export default function CveCard({ id, description, severity, published, source, isLoading }: CveCardProps) {
-  const formattedDate = new Date(published).toLocaleDateString('en-AU', {
-    year: 'numeric',
-    month: 'short',
-  });
+  const isValidDate = published && !isNaN(Date.parse(published));
+const formattedDate = isValidDate
+  ? new Date(published).toLocaleDateString('en-AU', { year: 'numeric', month: 'short' })
+  : 'Unknown';
+
 
   const sourceLabel = source?.toUpperCase() || 'UNKNOWN';
   const sourceClass = sourceStyles[sourceLabel.replace('.', '')] || sourceStyles.UNKNOWN;

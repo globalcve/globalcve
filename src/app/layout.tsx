@@ -1,5 +1,6 @@
 // Favicon patch confirmed
-import type { Metadata } from "next";
+import Head from "next/head";
+// import type { Metadata } from "next"; // Temporarily disabled
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -13,11 +14,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "GlobalCVE — Unified Vulnerability Search",
-  description:
-    "Search CVEs across NVD, JVN, CIRCL, ExploitDB, and CVE.org — all in one place.",
-};
+// export const metadata: Metadata = {
+//   title: "GlobalCVE — Unified Vulnerability Search",
+//   description:
+//     "Search CVEs across NVD, JVN, CIRCL, ExploitDB, and CVE.org — all in one place.",
+// };
 
 export default function RootLayout({
   children,
@@ -26,9 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
+      <Head>
         <link rel="icon" href="/globalcve-favicon.ico" />
-      </head>
+        <meta name="msapplication-TileImage" content="/globalcve-favicon.ico" />
+      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

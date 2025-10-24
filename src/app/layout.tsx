@@ -1,5 +1,5 @@
-// Favicon patch confirmed
-// import type { Metadata } from "next"; // Temporarily disabled
+import Head from "next/head";
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -13,11 +13,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// export const metadata: Metadata = {
-//   title: "GlobalCVE — Unified Vulnerability Search",
-//   description:
-//     "Search CVEs across NVD, JVN, CIRCL, ExploitDB, and CVE.org — all in one place.",
-// };
+export const metadata: Metadata = {
+  title: "GlobalCVE — Unified Vulnerability Search",
+  description:
+    "Search CVEs across NVD, JVN, CIRCL, ExploitDB, and CVE.org — all in one place.",
+  icons: {
+    icon: "/globalcve-favicon.ico",
+  },
+  openGraph: {
+    title: "GlobalCVE — Unified Vulnerability Search",
+    description:
+      "Search CVEs across NVD, JVN, CIRCL, ExploitDB, and CVE.org — all in one place.",
+    url: "https://globalcve.xyz",
+    siteName: "GlobalCVE",
+    images: [
+      {
+        url: "/globalcve-logo.png",
+        width: 512,
+        height: 512,
+        alt: "GlobalCVE Logo",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "GlobalCVE — Unified Vulnerability Search",
+    description:
+      "Search CVEs across NVD, JVN, CIRCL, ExploitDB, and CVE.org — all in one place.",
+    images: ["/globalcve-logo.png"],
+  },
+};
 
 export default function RootLayout({
   children,
@@ -26,6 +53,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Head>
+        <link rel="icon" href="/globalcve-favicon.ico" />
+      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

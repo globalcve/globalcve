@@ -29,8 +29,15 @@ GlobalCVE isn’t just another vulnerability feed. We’re building a transparen
 
 ---
 
+<p align="center">
+  <a href="https://globalcve.xyz" target="_blank">
+    🌐 Visit the live site → <strong>globalcve.xyz</strong>
+  </a>
+</p>
+
+
 # 🌐 GlobalCVE
-...
+
 
 
 An open-source vulnerability intelligence platform that aggregates CVEs from multiple national and vendor sources — cleanly, transparently, and developer-friendly.

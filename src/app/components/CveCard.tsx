@@ -8,7 +8,6 @@ type CveCardProps = {
   source: string;
   isLoading?: boolean;
   kev?: boolean;
-  ghAdvisory?: boolean; // ✅ PATCHED
 };
 
 const severityColors: Record<string, string> = {
@@ -38,7 +37,7 @@ const sourceStyles: Record<string, string> = {
   UNKNOWN: 'bg-gray-400 text-white',
 };
 
-export default function CveCard({ id, description, severity, published, source, isLoading, kev, ghAdvisory }: CveCardProps) {
+export default function CveCard({ id, description, severity, published, source, isLoading, kev }: CveCardProps) {
   const isValidDate = published && !isNaN(Date.parse(published));
   const formattedDate = isValidDate
     ? new Date(published).toLocaleDateString('en-AU', { year: 'numeric', month: 'short' })
@@ -59,11 +58,6 @@ export default function CveCard({ id, description, severity, published, source, 
               {kev && (
                 <span title="Known Exploited Vulnerability" className="text-xs px-2 py-1 rounded bg-black text-white">
                   🚨 KEV
-                </span>
-              )}
-              {ghAdvisory && (
-                <span title="GitHub Advisory match" className="text-xs px-2 py-1 rounded bg-gray-900 text-white">
-                  🛡️ GitHub
                 </span>
               )}
               {sourceLabel === 'JVN' && (

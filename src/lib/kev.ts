@@ -1,5 +1,3 @@
-// src/lib/kev.ts
-
 export type KEVEntry = {
   cveID: string;
   vendorProject: string;
@@ -36,5 +34,21 @@ export function searchKEV(kevList: KEVEntry[], query: string): KEVEntry[] {
     [item.cveID, item.vendorProject, item.product, item.vulnerabilityName, item.notes]
       .filter(Boolean)
       .some((field) => field.toLowerCase().includes(q))
+  );
+}
+
+/**
+ * Returns a Set of CVE IDs matched by vendorProject or product keywords
+ */
+export function keywordMatchKEV(kevList: KEVEntry[], query: string): Set<string> {
+  const q = query.toLowerCase();
+  return new Set(
+    kevList
+      .filter((entry) =>
+        [entry.vendorProject, entry.product]
+          .filter(Boolean)
+          .some((field) => field.toLowerCase().includes(q))
+      )
+      .map((entry) => entry.cveID)
   );
 }

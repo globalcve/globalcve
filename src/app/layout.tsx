@@ -48,25 +48,25 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="bg-[#282a36]">
+    <html lang="en" className="bg-[#282a36] h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-[#f8f8f2]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased text-[#f8f8f2] bg-[#282a36] min-h-screen w-full`}
       >
-        <div className="w-full bg-[#282a36]">
-          <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="pt-6 pb-4 text-center">
-              <a
-                href="https://www.buymeacoffee.com/globalcve"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block rounded bg-[#bd93f9] px-4 py-2 text-sm font-medium text-[#282a36] hover:bg-[#a78bfa] transition"
-              >
-                ☕ Buy Me a Coffee
-              </a>
-            </div>
+        <main className="flex flex-col min-h-screen w-full bg-[#282a36]">
+          <div className="w-full text-center pt-6 pb-4">
+            <a
+              href="https://www.buymeacoffee.com/globalcve"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded bg-[#bd93f9] px-4 py-2 text-sm font-medium text-[#282a36] hover:bg-[#a78bfa] transition"
+            >
+              ☕ Buy Me a Coffee
+            </a>
+          </div>
+          <div className="flex-grow w-full px-4 sm:px-6 lg:px-8 max-w-screen-xl mx-auto">
             {children}
           </div>
-        </div>
+        </main>
         <Analytics />
       </body>
     </html>

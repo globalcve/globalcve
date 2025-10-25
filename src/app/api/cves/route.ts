@@ -6,6 +6,11 @@ import { NextResponse } from 'next/server';
 import { fetchJVNFeed } from "../../../lib/jvn";
 import { fetchExploitDB } from "../../../lib/exploitdb";
 import { fetchKEV, keywordMatchKEV } from "../../../lib/kev"; // ✅ PATCHED: keyword-aware KEV
+import {
+  fetchAllGitHubAdvisories,
+  keywordMatchGitHub,
+  mapGitHubAliases
+} from "../../../lib/githubAdvisories"; // ✅ PATCHED: GitHub enrichment
 
 const NVD_API_KEY = process.env.NVD_API_KEY;
 
@@ -57,13 +62,25 @@ export async function GET(request: Request) {
   try {
     const kevList = await fetchKEV();
     kevMap = new Map(kevList.map(entry => [entry.cveID, true]));
-    kevKeywordMatches = keywordMatchKEV(kevList, query); // ✅ PATCHED: keyword match set
+    kevKeywordMatches = keywordMatchKEV(kevList, query);
     console.log('🚨 KEV entries loaded:', kevMap.size);
     console.log('🔎 KEV keyword matches:', kevKeywordMatches.size);
   } catch (err) {
     console.error('❌ KEV fetch error:', err);
   }
 
+  // 🔹 GitHub enrichment (preload)
+  let ghMap = new Map<string, boolean>();
+  let ghKeywordMatches = new Set<string>();
+  try {
+    const ghList = await fetchAllGitHubAdvisories();
+    ghMap = mapGitHubAliases(ghList);
+    ghKeywordMatches = keywordMatchGitHub(ghList, query);
+    console.log('🛡️ GitHub advisories loaded:', ghMap.size);
+    console.log('🔎 GitHub keyword matches:', ghKeywordMatches.size);
+  } catch (err) {
+    console.error('❌ GitHub advisory fetch error:', err);
+  }
   // 🔹 Fetch from NVD (5 pages)
   for (let i = 0; i < 5; i++) {
     const startIndex = i * 100;
@@ -84,12 +101,14 @@ export async function GET(request: Request) {
         severity: item.cve.metrics?.cvssMetricV31?.[0]?.cvssData?.baseSeverity || 'UNKNOWN',
         published: item.cve.published || new Date().toISOString(),
         source: 'NVD',
-        kev: kevMap.has(item.cve.id) || kevKeywordMatches.has(item.cve.id), // ✅ PATCHED
+        kev: kevMap.has(item.cve.id) || kevKeywordMatches.has(item.cve.id),
+        ghAdvisory: ghMap.has(item.cve.id) || ghKeywordMatches.has(item.cve.id), // ✅ PATCHED
       })));
     } catch (err) {
       console.error(`❌ NVD page ${i + 1} error:`, err);
     }
   }
+
   // 🔹 CIRCL fallback — keyword or exact ID
   try {
     const circlUrl = isExactCveId
@@ -121,7 +140,8 @@ export async function GET(request: Request) {
           severity: inferSeverity(item),
           published,
           source: 'CIRCL',
-          kev: kevMap.has(id) || kevKeywordMatches.has(id), // ✅ PATCHED
+          kev: kevMap.has(id) || kevKeywordMatches.has(id),
+          ghAdvisory: ghMap.has(id) || ghKeywordMatches.has(id), // ✅ PATCHED
         });
       }
 
@@ -150,7 +170,8 @@ export async function GET(request: Request) {
       severity: inferSeverity(item),
       published: item.published,
       source: 'JVN',
-      kev: kevMap.has(item.id) || kevKeywordMatches.has(item.id), // ✅ PATCHED
+      kev: kevMap.has(item.id) || kevKeywordMatches.has(item.id),
+      ghAdvisory: ghMap.has(item.id) || ghKeywordMatches.has(item.id), // ✅ PATCHED
     })));
   } catch (err) {
     console.error('❌ JVN fetch error:', err);
@@ -181,7 +202,8 @@ export async function GET(request: Request) {
       severity: inferSeverity(item),
       published: isValidDate(item.date) ? item.date : "2000-01-01",
       source: 'EXPLOITDB',
-      kev: kevMap.has(item.id) || kevKeywordMatches.has(item.id), // ✅ PATCHED
+      kev: kevMap.has(item.id) || kevKeywordMatches.has(item.id),
+      ghAdvisory: ghMap.has(item.id) || ghKeywordMatches.has(item.id), // ✅ PATCHED
     })));
   }
 
@@ -206,12 +228,14 @@ export async function GET(request: Request) {
         severity: inferSeverity(item),
         published: item.published || new Date().toISOString(),
         source: 'CVE.ORG',
-        kev: kevMap.has(item.id) || kevKeywordMatches.has(item.id), // ✅ PATCHED
+        kev: kevMap.has(item.id) || kevKeywordMatches.has(item.id),
+        ghAdvisory: ghMap.has(item.id) || ghKeywordMatches.has(item.id), // ✅ PATCHED
       })));
     }
   } catch (err) {
     console.error('❌ CVE.org fetch error:', err);
   }
+
   // 🔹 Archive ZIP with guard for missing year (patched)
   try {
     const yearMatch = !isExactCveId ? query.match(/^CVE-(\d{4})-/) : null;
@@ -243,7 +267,8 @@ export async function GET(request: Request) {
           severity: inferSeverity(item),
           published: item.published || new Date().toISOString(),
           source: 'ARCHIVE',
-          kev: kevMap.has(item.id) || kevKeywordMatches.has(item.id), // ✅ PATCHED
+          kev: kevMap.has(item.id) || kevKeywordMatches.has(item.id),
+          ghAdvisory: ghMap.has(item.id) || ghKeywordMatches.has(item.id), // ✅ PATCHED
         })));
       } else {
         console.warn(`⚠️ ${year}.json not found in cves.zip`);
@@ -252,7 +277,6 @@ export async function GET(request: Request) {
   } catch (err) {
     console.error('❌ Archive CVE fetch error:', err);
   }
-
   // 🔹 Prioritize exact CVE ID match if applicable
   let results = isExactCveId
     ? allResults.filter((r) => r.id?.toUpperCase() === query.toUpperCase())

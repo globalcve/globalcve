@@ -35,6 +35,32 @@ function inferSeverity(item: any): string {
   return 'UNKNOWN';
 }
 
+function getSeverityLabel(cvss: number): "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" | "UNKNOWN" {
+  if (cvss >= 9.0) return "CRITICAL";
+  if (cvss >= 7.0) return "HIGH";
+  if (cvss >= 4.0) return "MEDIUM";
+  if (cvss > 0) return "LOW";
+  return "UNKNOWN";
+}
+
+async function fetchGCVEFromCIRCL(keyword: string) {
+  try {
+    const res = await fetch(`https://vulnerability.circl.lu/api/query/${encodeURIComponent(keyword)}`);
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    return data.map((item: any) => ({
+      id: item.id || `GCVE-CIRCL-${item.hash}`,
+      description: item.summary || item.description || 'No description from CIRCL GCVE.',
+      severity: getSeverityLabel(item.cvss),
+      published: item.published || new Date().toISOString(),
+      source: "GCVE / CIRCL"
+    }));
+  } catch (err) {
+    console.error("❌ CIRCL GCVE fetch error:", err);
+    return [];
+  }
+}
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('query') || '';
@@ -91,9 +117,8 @@ export async function GET(request: Request) {
       const items = Array.isArray(data) ? data : [data];
 
       for (const item of items) {
-      const rawDate = item.Published;
-const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
-
+        const rawDate = item.Published;
+        const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
 
         const description =
           item?.summary?.trim() ||
@@ -115,7 +140,18 @@ const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
     console.error('❌ CIRCL error:', err);
   }
 
-  // 🔹 JVN feed with manual keyword match (lint-cleaned)
+  // 🔹 CIRCL GCVE keyword search (GCVE / CIRCL)
+  try {
+    if (query.trim()) {
+      const gcveResults = await fetchGCVEFromCIRCL(query);
+      console.log('🔎 GCVE / CIRCL keyword matches:', gcveResults.length);
+      allResults.push(...gcveResults);
+    }
+  } catch (err) {
+    console.error('❌ GCVE / CIRCL keyword fetch error:', err);
+  }
+
+  // 🔹 JVN feed with manual keyword match
   try {
     const jvnResults = await fetchJVNFeed();
     console.log('📰 JVN feed loaded:', jvnResults.length);
@@ -138,6 +174,7 @@ const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
   } catch (err) {
     console.error('❌ JVN fetch error:', err);
   }
+
   // 🔹 ExploitDB with partial match
   let exploitResults = [];
   try {
@@ -192,8 +229,7 @@ const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
   } catch (err) {
     console.error('❌ CVE.org fetch error:', err);
   }
-
-  // 🔹 Archive ZIP with guard for missing year (patched)
+  // 🔹 Archive ZIP with guard for missing year
   try {
     const yearMatch = !isExactCveId ? query.match(/^CVE-(\d{4})-/) : null;
     const year = yearMatch?.[1];

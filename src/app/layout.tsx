@@ -52,17 +52,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#282a36] text-[#f8f8f2]`}
       >
-        <div className="pt-6 pb-4 text-center bg-[#282a36]">
-          <a
-            href="https://www.buymeacoffee.com/globalcve"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block rounded bg-[#ffb86c] px-4 py-2 text-sm font-medium text-[#282a36] hover:bg-[#ff9f50] transition"
-          >
-            ☕ Buy Me a Coffee
-          </a>
+        <div className="w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="pt-6 pb-4 text-center bg-[#282a36]">
+            <a
+              href="https://www.buymeacoffee.com/globalcve"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded bg-[#bd93f9] px-4 py-2 text-sm font-medium text-[#282a36] hover:bg-[#a78bfa] transition"
+            >
+              ☕ Buy Me a Coffee
+            </a>
+          </div>
+          {children}
         </div>
-        {children}
         <Analytics />
       </body>
     </html>

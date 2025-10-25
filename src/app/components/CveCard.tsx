@@ -28,7 +28,6 @@ const severityIcons: Record<string, string> = {
 const sourceStyles: Record<string, string> = {
   NVD: 'bg-blue-500 text-white',
   CIRCL: 'bg-purple-500 text-white',
-  'GCVE / CIRCL': 'bg-purple-600 text-white',
   CNNVD: 'bg-red-500 text-white',
   JVN: 'bg-red-700 text-white',
   EXPLOITDB: 'bg-red-600 text-white',
@@ -68,11 +67,6 @@ export default function CveCard({ id, description, severity, published, source, 
               {sourceLabel === 'CIRCL' && (
                 <span title="CIRCL source" className="text-xs px-2 py-1 rounded bg-purple-500 text-white">
                   🧠 CIRCL
-                </span>
-              )}
-              {sourceLabel === 'GCVE / CIRCL' && (
-                <span title="GCVE via CIRCL" className="text-xs px-2 py-1 rounded bg-purple-600 text-white">
-                  🧠 GCVE / CIRCL
                 </span>
               )}
               {sourceLabel === 'NVD' && (

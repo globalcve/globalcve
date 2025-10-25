@@ -7,6 +7,7 @@ type CveCardProps = {
   published: string;
   source: string;
   isLoading?: boolean;
+  kev?: boolean;
 };
 
 const severityColors: Record<string, string> = {
@@ -36,7 +37,7 @@ const sourceStyles: Record<string, string> = {
   UNKNOWN: 'bg-gray-400 text-white',
 };
 
-export default function CveCard({ id, description, severity, published, source, isLoading }: CveCardProps) {
+export default function CveCard({ id, description, severity, published, source, isLoading, kev }: CveCardProps) {
   const isValidDate = published && !isNaN(Date.parse(published));
   const formattedDate = isValidDate
     ? new Date(published).toLocaleDateString('en-AU', { year: 'numeric', month: 'short' })
@@ -54,6 +55,11 @@ export default function CveCard({ id, description, severity, published, source, 
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
               {id}
+              {kev && (
+                <span title="Known Exploited Vulnerability" className="text-xs px-2 py-1 rounded bg-black text-white">
+                  🚨 KEV
+                </span>
+              )}
               {sourceLabel === 'JVN' && (
                 <span title="Japanese advisory source" className="text-xs px-2 py-1 rounded bg-red-700 text-white">
                   🇯🇵 JVN

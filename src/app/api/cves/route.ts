@@ -5,6 +5,7 @@ console.log("🧪 LIVE PATCH: ExploitDB crash guard active");
 import { NextResponse } from 'next/server';
 import { fetchJVNFeed } from "../../../lib/jvn";
 import { fetchExploitDB } from "../../../lib/exploitdb";
+import { fetchKEV } from "../../../lib/kev"; // ✅ NEW: KEV support
 
 const NVD_API_KEY = process.env.NVD_API_KEY;
 
@@ -50,6 +51,16 @@ export async function GET(request: Request) {
   console.log('🔎 Exact CVE ID match mode:', isExactCveId);
   console.log('📅 Sort order:', sortOrder);
 
+  // 🔹 KEV enrichment (preload)
+  let kevMap = new Map<string, boolean>();
+  try {
+    const kevList = await fetchKEV();
+    kevMap = new Map(kevList.map(entry => [entry.cveID, true]));
+    console.log('🚨 KEV entries loaded:', kevMap.size);
+  } catch (err) {
+    console.error('❌ KEV fetch error:', err);
+  }
+
   // 🔹 Fetch from NVD (5 pages)
   for (let i = 0; i < 5; i++) {
     const startIndex = i * 100;
@@ -70,12 +81,12 @@ export async function GET(request: Request) {
         severity: item.cve.metrics?.cvssMetricV31?.[0]?.cvssData?.baseSeverity || 'UNKNOWN',
         published: item.cve.published || new Date().toISOString(),
         source: 'NVD',
+        kev: kevMap.has(item.cve.id), // ✅ KEV flag added
       })));
     } catch (err) {
       console.error(`❌ NVD page ${i + 1} error:`, err);
     }
   }
-
   // 🔹 CIRCL fallback — keyword or exact ID
   try {
     const circlUrl = isExactCveId
@@ -91,21 +102,23 @@ export async function GET(request: Request) {
       const items = Array.isArray(data) ? data : [data];
 
       for (const item of items) {
-      const rawDate = item.Published;
-const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
-
+        const rawDate = item.Published;
+        const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
 
         const description =
           item?.summary?.trim() ||
           item?.containers?.cna?.descriptions?.[0]?.value?.trim() ||
           'No description available from CIRCL.';
 
+        const id = item.cveMetadata?.cveId || item.id;
+
         allResults.push({
-          id: item.cveMetadata?.cveId || item.id,
+          id,
           description,
           severity: inferSeverity(item),
           published,
           source: 'CIRCL',
+          kev: kevMap.has(id), // ✅ KEV flag added
         });
       }
 
@@ -134,10 +147,12 @@ const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
       severity: inferSeverity(item),
       published: item.published,
       source: 'JVN',
+      kev: kevMap.has(item.id), // ✅ KEV flag added
     })));
   } catch (err) {
     console.error('❌ JVN fetch error:', err);
   }
+
   // 🔹 ExploitDB with partial match
   let exploitResults = [];
   try {
@@ -163,6 +178,7 @@ const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
       severity: inferSeverity(item),
       published: isValidDate(item.date) ? item.date : "2000-01-01",
       source: 'EXPLOITDB',
+      kev: kevMap.has(item.id), // ✅ KEV flag added
     })));
   }
 
@@ -187,12 +203,12 @@ const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
         severity: inferSeverity(item),
         published: item.published || new Date().toISOString(),
         source: 'CVE.ORG',
+        kev: kevMap.has(item.id), // ✅ KEV flag added
       })));
     }
   } catch (err) {
     console.error('❌ CVE.org fetch error:', err);
   }
-
   // 🔹 Archive ZIP with guard for missing year (patched)
   try {
     const yearMatch = !isExactCveId ? query.match(/^CVE-(\d{4})-/) : null;
@@ -224,6 +240,7 @@ const published = rawDate && !isNaN(Date.parse(rawDate)) ? rawDate : null;
           severity: inferSeverity(item),
           published: item.published || new Date().toISOString(),
           source: 'ARCHIVE',
+          kev: kevMap.has(item.id), // ✅ KEV flag added
         })));
       } else {
         console.warn(`⚠️ ${year}.json not found in cves.zip`);

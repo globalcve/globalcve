@@ -48,9 +48,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="bg-[#282a36]">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#282a36] text-[#f8f8f2]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased text-[#f8f8f2]`}
       >
         <div className="w-full bg-[#282a36]">
           <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">

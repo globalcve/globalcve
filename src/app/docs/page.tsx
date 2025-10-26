@@ -13,6 +13,29 @@ export default function DocsPage() {
         <p>
           Our API supports RESTful endpoints for CVE search, filtering, and metadata enrichment.
           Authentication is optional for public queries.
+          ## ⚠️ API Usage Notice
+The GlobalCVE API is designed for **local deployment only**.
+Due to strict security settings and rate-limit concerns on the public site (https://globalcve.xyz), direct API access is **not available** from the hosted frontend. While technically possible, it is not currently offered at this point in time.
+
+### ✅ How to Use the API ###
+
+To query the API, you must:
+
+- Clone the repository
+- Run the project locally (`npm run dev`)
+- Access the API via `http://localhost:3000/api/cves?query=...`
+This ensures full access to `/api/cves` and avoids rate limiting or edge security blocks.
+
+### 🔐 Why This Matters ###
+GlobalCVE prioritizes security and performance. Hosting the API publicly would expose it to abuse, scraping, and potential denial-of-service risks - However this service will be available at a later date.
+For contributors and developers, local deployment offers:
+
+- Full access to all query parameters
+- Reliable testing and debugging
+- No external throttling or middleware interference
+- Easy to deploy in a docker container 
+---
+📌 This note applies to both the [GitHub API documentation](https://github.com/globalcve/globalcve-site) and the [live site docs](https://globalcve.xyz/docs). Please ensure you run the API locally for full functionality.
         </p>
       </section>
 

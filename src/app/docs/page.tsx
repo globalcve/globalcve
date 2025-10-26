@@ -8,41 +8,45 @@ export default function DocsPage() {
         This page documents how to query CVE data, filter by severity, and integrate with your tools.
       </p>
 
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-[#ff79c6] mb-2">🚀 Getting Started</h2>
+      <section className="mb-12 space-y-4 text-sm">
+        <h2 className="text-2xl font-semibold text-[#ff79c6]">🚀 Getting Started</h2>
         <p>
-          Our API supports RESTful endpoints for CVE search, filtering, and metadata enrichment.
-          Authentication is optional for public queries.
-          ## ⚠️ API Usage Notice
-The GlobalCVE API is designed for **local deployment only**.
-Due to strict security settings and rate-limit concerns on the public site (https://globalcve.xyz), direct API access is **not available** from the hosted frontend. While technically possible, it is not currently offered at this point in time.
+          Our API supports RESTful endpoints for CVE search, filtering, and metadata enrichment. Authentication is optional for public queries.
+        </p>
 
-### ✅ How to Use the API ###
+        <h3 className="text-lg font-semibold text-yellow-400">⚠️ API Usage Notice</h3>
+        <p>
+          The GlobalCVE API is designed for <strong>local deployment only</strong>. Due to strict security settings and rate-limit concerns on the public site (<a href="https://globalcve.xyz" className="underline text-blue-300">globalcve.xyz</a>), direct API access is <strong>not available</strong> from the hosted frontend.
+        </p>
 
-To query the API, you must:
+        <h3 className="text-lg font-semibold text-green-400">✅ How to Use the API</h3>
+        <ul className="list-disc list-inside">
+          <li>Clone the repository</li>
+          <li>Run the project locally (<code>npm run dev</code>)</li>
+          <li>Access the API via <code>http://localhost:3000/api/cves?query=...</code></li>
+        </ul>
 
-- Clone the repository
-- Run the project locally (`npm run dev`)
-- Access the API via `http://localhost:3000/api/cves?query=...`
-This ensures full access to `/api/cves` and avoids rate limiting or edge security blocks.
+        <h3 className="text-lg font-semibold text-purple-400">🔐 Why This Matters</h3>
+        <p>
+          GlobalCVE prioritizes security and performance. Hosting the API publicly would expose it to abuse, scraping, and potential denial-of-service risks. For contributors and developers, local deployment offers:
+        </p>
+        <ul className="list-disc list-inside">
+          <li>Full access to all query parameters</li>
+          <li>Reliable testing and debugging</li>
+          <li>No external throttling or middleware interference</li>
+          <li>Easy to deploy in a Docker container</li>
+        </ul>
 
-### 🔐 Why This Matters ###
-GlobalCVE prioritizes security and performance. Hosting the API publicly would expose it to abuse, scraping, and potential denial-of-service risks - However this service will be available at a later date.
-For contributors and developers, local deployment offers:
-
-- Full access to all query parameters
-- Reliable testing and debugging
-- No external throttling or middleware interference
-- Easy to deploy in a docker container 
----
-📌 This note applies to both the [GitHub API documentation](https://github.com/globalcve/globalcve-site) and the [live site docs](https://globalcve.xyz/docs). Please ensure you run the API locally for full functionality.
+        <hr className="my-4 border-gray-600" />
+        <p>
+          📌 This note applies to both the <a href="https://github.com/globalcve/globalcve-site" className="underline text-blue-300">GitHub API documentation</a> and the <a href="https://globalcve.xyz/docs" className="underline text-blue-300">live site docs</a>. Please ensure you run the API locally for full functionality.
         </p>
       </section>
 
       <section className="mb-12">
         <h2 className="text-2xl font-semibold text-[#bd93f9] mb-2">🔍 Example Endpoint</h2>
         <pre className="bg-[#44475a] p-4 rounded-md text-sm overflow-x-auto">
-          GET /api/cves?query=openssl&severity=high
+          GET /api/cves?query=openssl&amp;severity=high
         </pre>
         <p className="text-sm text-[#6272a4] mt-2">
           Returns CVEs matching "openssl" with high severity.

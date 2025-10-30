@@ -102,7 +102,7 @@ Then visit [http://localhost:3000](http://localhost:3000) to view the site.
 We welcome PRs, parser improvements, and new source integrations.  
 Contribution templates coming soon.
 
-- [Contributor Guide](docs/contributing.md) — *coming soon*  
+- [Contributor Guide](docs/contributing.md) 
 - [API Docs](docs/index.md) — *coming soon*
 
 ---

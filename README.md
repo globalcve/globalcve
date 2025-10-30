@@ -103,7 +103,7 @@ We welcome PRs, parser improvements, and new source integrations.
 Contribution templates coming soon.
 
 - [Contributor Guide](docs/contributing.md) 
-- [API Docs](docs/index.md) — *coming soon*
+- [API Docs](docs/index.md) 
 
 ---
 

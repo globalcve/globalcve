@@ -60,9 +60,10 @@ An open-source vulnerability intelligence platform that aggregates CVEs from mul
 - 🇯🇵 JVN (Japan Vulnerability Notes)  
 - 🇨🇭 CIRCL (Luxembourg CERT feed)  
 - 🧨 ExploitDB (Public exploit repository)  
-- 🇨🇳 CNNVD — *coming soon*  
-- 🤖 Android Security Bulletins (ASB) — *coming soon*  
-- 🇫🇷 CERT-FR — *under review*
+- 🇨🇳 CNNVD — *in testing repo*
+- 🤖 Android Security Bulletins (ASB) — *in testing repo*  
+- 🇫🇷 CERT-FR — *in testing repo*
+- Testing Repo contains many many many sources.
 
 ---
 
@@ -96,14 +97,16 @@ To run locally:
 Then visit [http://localhost:3000](http://localhost:3000) to view the site.
 
 ---
-
 ## 🛠️ Contributing
 
-We welcome PRs, parser improvements, and new source integrations.  
-Contribution templates coming soon.
+We welcome PRs, parser improvements, and new source integrations. Whether you're fixing bugs, adding new CVE feeders, or improving the UI — we’d love your help.
 
-- [Contributor Guide](docs/contributing.md) 
-- [API Docs](docs/index.md) 
+- [Contributor Guide](docs/contributing.md) — setup, standards, and how to get started
+- [API Docs](docs/index.md) — endpoints, enrichment logic, and source structure
+- [Testing Repo](https://github.com/globalcve/testing) — 40+ unmerged sources, experimental features
+- [Open Issues](https://github.com/globalcve/globalcve/issues) — issues, bugs, and feature requests
+
+**🧪 Want to help merge new CVE sources?** Check out [globalcve/testing](https://github.com/globalcve/testing) — we’re actively onboarding contributors.
 
 ---
 

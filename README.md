@@ -85,6 +85,8 @@ Here’s a preview of GlobalCVE’s UI:
 
 ### Homepage 
 ![Homepage Dark](screenshots/homepage2.png)
+![Homepage Dark](screenshots/homepage3_beta_testing.png)
+
 
 ## 📦 Getting Started
 

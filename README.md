@@ -11,6 +11,8 @@
   <img src="https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white" />
   <img src="https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black" />
   <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?logo=tailwindcss&logoColor=white" />
+  <img src="https://img.shields.io/github/commit-activity/m/globalcve/globalcve?color=orange&label=Commits" />
+  <img src="https://img.shields.io/badge/Branch-Stable-green?logo=github&logoColor=white" />
   <img src="https://img.shields.io/github/license/globalcve/globalcve" />
   <img src="https://img.shields.io/badge/Security-CVE%20Tracking-red" />
   <a href="https://globalcve.vercel.app">

@@ -4,6 +4,20 @@
 
 
 **_Global threats. Unified insights._**
+# Global Threats, Unified Insights
+
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white" />
+  <img src="https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black" />
+  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?logo=tailwindcss&logoColor=white" />
+  <img src="https://img.shields.io/github/license/globalcve/globalcve" />
+  <img src="https://img.shields.io/badge/Security-CVE%20Tracking-red" />
+  <a href="https://globalcve.vercel.app">
+    <img src="https://vercelbadge.vercel.app/api/globalcve/globalcve" />
+  </a>
+</p>
+
 ## ☕ Support the Project
 
 If you find GlobalCVE useful, consider [buying me a coffee](https://www.buymeacoffee.com/globalcve) to support ongoing development.

@@ -4,7 +4,7 @@
 
 
 **_Global threats. Unified insights._**
-# Global Threats, Unified Insights
+
 
 <p align="center">
   <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" />

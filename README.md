@@ -161,9 +161,10 @@ Our **[testing repository](https://github.com/globalcve/testing)** is now **live
 **Want to test cutting-edge features?** Check out [globalcve/testing](https://github.com/globalcve/testing) and report any issues you find!
 
 ---
-## 🛠️ Contributing
+## 🛠️ Contributing - Dont be Shy !  :)
 
 We welcome PRs, parser improvements, and new source integrations. Whether you're fixing bugs, adding new CVE feeders, or improving the UI — we’d love your help.
+Send me a email if you want to get on board !
 
 - [Contributor Guide](docs/contributing.md) — setup, standards, and how to get started
 - [API Docs](docs/index.md) — endpoints, enrichment logic, and source structure

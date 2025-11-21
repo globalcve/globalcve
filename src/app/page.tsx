@@ -72,7 +72,7 @@ export default function Page() {
         </div>
         <div className="bg-[#44475a] p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold text-[#8be9fd] mb-2">Open-Source Intelligence</h2>
-          <p>Built by and for the community — transparent, collaborative, and always improving.</p>
+          <p>Built by JEGLY for the community — transparent, collaborative, and always improving,Check out the testing repo for new features.</p>
         </div>
         <div className="bg-[#44475a] p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold text-[#ff79c6] mb-2">Security-Centric Design</h2>

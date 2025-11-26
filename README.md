@@ -39,8 +39,7 @@ GlobalCVE isn’t just another vulnerability feed. We’re building a transparen
   Built with serverless architecture and clean UI logic, GlobalCVE is fast, forkable, and easy to integrate.
 
 - **Security-first ethos**  
-  We prioritize clarity, provenance, and responsible data use — not marketing fluff or gated dashboards.
-
+  We prioritize clarity, provenance, and responsible data use.
 - **Built by builders**  
   This isn’t a product. It’s infrastructure. And it’s yours to use, improve, and extend.
 
@@ -148,7 +147,7 @@ Then visit [http://localhost:3000](http://localhost:3000) to view the site.
 
 ## 🧪 Testing Branch (Beta)
 
-Our **[testing repository](https://github.com/globalcve/testing)** is now **live and running**! 🎉
+Our **[testing repository](https://github.com/globalcve/testing)** is now **live and running**! with many new features!  🎉
 
 **New features in testing:**
 - 📊 **Advanced visualization charts** for CVE trends and statistics

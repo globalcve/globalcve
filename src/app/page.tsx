@@ -55,7 +55,7 @@ export default function Page() {
           <li><a href="/" className="hover:underline text-[#8be9fd]">Home</a></li>
           <li><a href="#search" className="hover:underline text-[#ff79c6]">Search</a></li>
           <li><a href="/docs" className="hover:underline text-[#bd93f9]">API Docs</a></li>
-          <li><a href="https://github.com/globalcve" className="hover:underline text-[#f1fa8c]">GitHub</a></li>
+          <li><a href="https://github.com/jegly" className="hover:underline text-[#f1fa8c]">GitHub</a></li>
         </ul>
       </nav>
 
@@ -87,7 +87,7 @@ export default function Page() {
       <section className="mt-16 max-w-4xl w-full text-center">
         <h2 className="text-3xl font-bold text-[#ff79c6] mb-6">Built by the community</h2>
         <div className="bg-[#44475a] p-6 rounded-lg shadow-md">
-          <h3 className="text-xl font-semibold text-[#50fa7b] mb-2">JESSE-EG-LY @ GlobalCVE</h3>
+          <h3 className="text-xl font-semibold text-[#50fa7b] mb-2">JESSE-EG-LY @ JEGLY</h3>
           <p>Founder and lead architect of GlobalCVE. Building a unified, open-source hub for vulnerability intelligence.</p>
         </div>
         <p className="mt-6">

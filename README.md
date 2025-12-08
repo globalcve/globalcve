@@ -121,7 +121,7 @@ Here’s a preview of GlobalCVE’s UI:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/globalcve/globalcve.git
+git clone https://github.com/jegly/globalcve.git
 cd globalcve
 ```
 
@@ -147,7 +147,7 @@ Then visit [http://localhost:3000](http://localhost:3000) to view the site.
 
 ## 🧪 Testing Branch (Beta)
 
-Our **[testing repository](https://github.com/globalcve/testing)** is now **live and running**! with many new features!  🎉
+Our **[testing repository](https://github.com/jegly/globalcve-testing)** is now **live and running**! with many new features!  🎉
 
 **New features in testing:**
 - 📊 **Advanced visualization charts** for CVE trends and statistics
@@ -157,7 +157,7 @@ Our **[testing repository](https://github.com/globalcve/testing)** is now **live
 
 **⚠️ Status:** Still in beta — expect occasional bugs and breaking changes. We're actively merging stable features into the main branch.
 
-**Want to test cutting-edge features?** Check out [globalcve/testing](https://github.com/globalcve/testing) and report any issues you find!
+**Want to test cutting-edge features?** Check out [globalcve/testing](https://github.com/jegly/globalcve-testing) and report any issues you find!
 
 ---
 ## 🛠️ Contributing - Dont be Shy !  :)
